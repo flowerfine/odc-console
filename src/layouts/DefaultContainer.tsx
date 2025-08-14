@@ -16,7 +16,7 @@
 
 import React from "react";
 import { Outlet } from "@umijs/max";
-import styles from "@/layouts/SpaceContainer/index.less";
+import styles from "./DefaultContainer.less";
 
 class DefaultContainer extends React.Component {
   public render() {

@@ -25,13 +25,10 @@ import WorkspaceStore from "./context/WorkspaceStore";
 
 interface WorkBenchProps {}
 
-const MinWidth = 180;
-
 const WorkBench: React.FC<WorkBenchProps> = (props: WorkBenchProps) => {
   const pageStoreSnap = useSnapshot(pageStore.store);
   const { pages = [], activePageKey } = pageStoreSnap;
-  const [sideWidth, setSideWidth] = useState(MinWidth + 100);
-
+ 
   useEffect(() => {
     async function asyncEffect() {
       await pageStore.initStore();
