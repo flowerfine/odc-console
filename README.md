@@ -20,6 +20,12 @@ npm start # pnpm start
 npm run build # pnpm run build
 ```
 
+## 项目说明
+
+* 布局。Ant Design Pro 是通过 [ProLayout](https://pro-components.antdigital.dev/components/layout) 进行布局，odc-client 布局是自己扣的，没有 Ant Design Pro 灵活。
+  * odc-client 的布局分为 2 部分：主页面和 sql Workspace。两块布局不通用，项目中是做了 2 个。
+* 状态管理。Umi 提供了多种状态管理工具，odc-client 采用 mobx 作为状态管理工具，考虑到简单性，odc-console 项目采用了 umi 集成的 valtio
+
 ## 参考链接
 
 * [odc-client](https://github.com/oceanbase/odc-client)
