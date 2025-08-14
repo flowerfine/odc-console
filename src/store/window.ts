@@ -1,0 +1,245 @@
+import { IPage, PageType } from "@/constants";
+import { derive, proxy } from "@umijs/max";
+import { autoSave } from "./utils/metaSync";
+import { Page } from "./helper/page/pages/base";
+
+export interface IPageOptions {
+  title?: string;
+  key?: string;
+  updateKey?: string;
+  path?: string;
+  isSaved?: boolean;
+  startSaving?: boolean;
+}
+
+interface IPageState {
+  _saveDisposers: (() => void)[];
+  pages: IPage[];
+  activePageKey: string | null;
+  activePage: IPage;
+}
+
+export class PageStore {
+  private _saveDisposers: (() => void)[] = [];
+  
+  public store = proxy<IPageState>({
+    _saveDisposers: [],
+    pages: [],
+    activePageKey: null,
+
+    get activePage() {
+      return this.pages.find((p) => p.key === this.activePageKey);
+    }
+  });
+
+  getPageByKey(pageKey: string) {
+    return this.store.pages.find((p) => p.key === pageKey);
+  }
+
+  /** 初始化store */
+  public async initStore() {
+    this._saveDisposers.map((disposer) => {
+      disposer();
+    });
+    this._saveDisposers = [];
+    this._saveDisposers.push(await autoSave(this, 'pages', 'pages', []));
+    this._saveDisposers.push(await autoSave(this, 'activePageKey', 'activePageKey', null));
+  }
+
+  /** 切换打开的page，更新一下URL */
+  public async setActivePageKeyAndPushUrl(activePageKey: string | null) {
+    await this.updateActiveKey(() => {
+      return activePageKey;
+    });
+  }
+
+  public async openPage(page: Page, insertHead?: boolean) {
+    let { pageTitle, pageKey, pageParams, pageType } = page;
+    const existed = !!this.store.pages.find((p) => p.key === pageKey);
+    switch (pageType) {
+      case PageType.SQL:
+      default: {
+      }
+    }
+
+    /** 未打开的page或者未保存的page，则push进pages。 */
+    if (!existed) {
+      const newPage: IPage = {
+        key: pageKey,
+        title: pageTitle,
+        type: pageType,
+        isSaved: true,
+        params: pageParams,
+      };
+
+      if (insertHead) {
+        this.store.pages = [].concat(newPage).concat(this.store.pages);
+      } else {
+        this.store.pages = this.store.pages.concat(newPage);
+      }
+    }
+    if (open) {
+      await this.setActivePageKeyAndPushUrl(pageKey);
+    }
+    await this.updatePage(pageKey, undefined, pageParams);
+  }
+
+  /** New!!!更新page */
+  public async updatePage(targetPageKey: string, options: IPageOptions = {}, pageData: any = {}) {
+    const { title, isSaved, startSaving, updateKey } = options;
+    await this.updatePages(async (pages) => {
+      const newPages = [];
+      for (let i = 0; i < pages.length; i++) {
+        const p = { ...pages[i] };
+        if (p.key === targetPageKey) {
+          // 更新标题
+          if (title) {
+            p.title = title;
+          }
+
+          // 更新参数
+          p.params = {
+            ...p.params,
+            ...pageData,
+          };
+
+          // 更新页面状态
+          if (isSaved !== undefined) {
+            p.isSaved = isSaved;
+          }
+          // 更新页面状态
+          if (startSaving !== undefined) {
+            p.startSaving = startSaving;
+          }
+
+          // 更新 pageKey
+          if (updateKey) {
+            p.key = updateKey;
+            await this.setActivePageKeyAndPushUrl(p.key);
+          }
+        }
+        newPages.push(p);
+      }
+      return newPages;
+    });
+  }
+
+  public updatePageColor(title: string, isDisabled: boolean) {
+    const targetPage = this.store.pages.find((page: IPage) => page.title === title);
+    if (targetPage) {
+      this.updatePage(targetPage.key, undefined, {
+        isDisabled,
+      });
+    }
+  }
+
+  public async close(targetPageKey: string) {
+    let activeKey = this.store.activePageKey;
+    let lastIndex = -1;
+    this.store.pages.forEach((page, i) => {
+      if (page.key === targetPageKey) {
+        lastIndex = i - 1;
+      }
+    });
+    const pages = this.store.pages.filter((page) => page.key !== targetPageKey);
+    if (pages.length && activeKey === targetPageKey) {
+      activeKey = lastIndex >= 0 ? pages[lastIndex].key : pages[0].key;
+    }
+    await this.updatePages(async (oldPages) => {
+      return pages;
+    });
+    await this.setActivePageKeyAndPushUrl(activeKey);
+  }
+
+  /** 清除全部页面，适用于返回连接列表页完全退出工作台的场景
+   *
+   * updated: 保留页面的数据，48小时过期
+   */
+  public async clear() {
+    await this.updatePages(async (pages) => {
+      return [];
+    });
+    await this.updateActiveKey(() => {
+      return null;
+    });
+  }
+
+  /** 部分常驻页面不应该被清除，也保留SQL和匿名快 */
+  public async clearExceptResidentPages() {
+    // 只保留常驻页面
+    await this.updatePages(async (pages) => {
+      return pages.filter(
+        (p) =>
+          p.params.isDocked ||
+          [PageType.SQL].includes(p.type),
+      );
+    });
+    await this.updateActiveKey((pages, activeKey) => {
+      return pages[0]?.key;
+    });
+  }
+
+  public async save(targetPageKey: string) {
+    await this.updatePageByKey(targetPageKey, (oldPage) => {
+      return {
+        ...oldPage,
+        startSaving: false,
+        isSaved: true,
+      };
+    });
+  }
+
+  public startSaving(targetPageKey: string) {
+    this.updatePageByKey(targetPageKey, (oldPage) => {
+      return {
+        ...oldPage,
+        startSaving: true,
+      };
+    });
+  }
+
+  public cancelSaving(targetPageKey: string) {
+    this.updatePageByKey(targetPageKey, (oldPage) => {
+      return {
+        ...oldPage,
+        startSaving: false,
+      };
+    });
+  }
+
+  public setPageUnsaved(targetPageKey: string) {
+    this.updatePageByKey(targetPageKey, (oldPage) => {
+      return {
+        ...oldPage,
+        isSaved: false,
+      };
+    });
+  }
+
+  /** 更新单个page */
+  private async updatePageByKey(pageKey: string, getNewPage: (oldPage: IPage) => IPage) {
+    this.store.pages = this.store.pages.map((p, i) => {
+      if (p.key === pageKey) {
+        return getNewPage(p);
+      }
+      return p;
+    });
+  }
+
+  /** 更新多个page */
+  public async updatePages(getNewPages: (oldPages: IPage[]) => Promise<IPage[]>) {
+    this.store.pages = await getNewPages(this.store.pages);
+  }
+
+  /** 更新activeKey */
+  private async updateActiveKey(fn: (pages: IPage[], oldActiveKey: any) => any) {
+    this.store.activePageKey = fn(this.store.pages, this.store.activePageKey);
+    const pageType = this.getPageByKey(this.store.activePageKey)?.type;
+  }
+
+  public restore(pages: IPage[]) {
+    // TODO: 从缓存中恢复全部页面
+  }
+
+}
+export default new PageStore();

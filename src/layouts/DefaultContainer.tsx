@@ -1,0 +1,45 @@
+/*
+ * Copyright 2023 OceanBase
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import React from 'react';
+import { Layout } from 'antd';
+import { Outlet } from '@umijs/max';
+// import styles from './DefaultContainer.less';
+import styles from '@/layouts/SpaceContainer/index.less';
+
+const { Content } = Layout;
+
+class DefaultContainer extends React.Component {
+  public render() {
+    return (
+      <div className={styles.content}>
+      <div className={styles.mainBox}>
+        <div className={styles.main}>
+          <Outlet />
+        </div>
+      </div>
+    </div>
+
+      // <Layout style={{ minWidth: '960px', height: '100%' }}>
+      //   <Content className={styles.content}>
+      //     <Outlet />
+      //   </Content>
+      // </Layout>
+    );
+  }
+}
+
+export default DefaultContainer;
