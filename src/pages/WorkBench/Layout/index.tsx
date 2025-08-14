@@ -21,14 +21,13 @@ import ActivityBarContext from '../context/ActivityBarContext';
 import styles from './index.less';
 
 interface IProps {
-  activityBar: React.ReactNode;
   sideBar: React.ReactNode;
   editorGroup: React.ReactNode;
 }
 
 const MinWidth = 180;
 
-const WorkBenchLayout: React.FC<IProps> = function ({ activityBar, sideBar, editorGroup }) {
+const WorkBenchLayout: React.FC<IProps> = function ({ sideBar, editorGroup }) {
   const [sideWidth, setSideWidth] = useState(MinWidth + 100);
   const minSizeEventCountRef = useRef(0);
   const splitRef = useRef<SplitPane>();
@@ -67,8 +66,6 @@ const WorkBenchLayout: React.FC<IProps> = function ({ activityBar, sideBar, edit
   };
   return (
     <div className={styles.workbench}>
-      <div className={styles.activityBar}>{activityBar}</div>
-
       <div className={styles.splitPane}>
         <SplitPane
           ref={splitRef}

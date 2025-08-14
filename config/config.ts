@@ -52,10 +52,6 @@ export default defineConfig({
   model: {},
   valtio: {},
   initialState: {},  
-  // layout: {
-  //   locale: true,
-  //   ...defaultSettings,
-  // },
   layout: false,
   
   moment2dayjs: {

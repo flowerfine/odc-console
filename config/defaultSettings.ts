@@ -14,6 +14,8 @@ const Settings: ProLayoutProps & {
   contentWidth: 'Fluid',
   fixedHeader: false,
   fixSiderbar: true,
+  // splitMenus: true,
+  // siderMenuType: "sub",
   colorWeak: false,
   title: '左上角的标题',
   pwa: true,

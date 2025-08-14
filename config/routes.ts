@@ -13,42 +13,15 @@
 export default [
   {
     path: "/",
-    wrappers: ["@/layouts/PageLoadingWrapper"],
-    component: "../layouts/AppContainer",
+    component: "../layouts/DefaultContainer",
     routes: [
+      { path: "/", redirect: "/workbench" },
       {
-        path: "/",
-        component: "../layouts/UserWrapper",
-        routes: [
-          {
-            path: "/",
-            component: "../layouts/SpaceContainer",
-            routes: [
-              { path: "/", redirect: "/console" },
-              { path: "/console", component: "@/pages/Welcome" },
-            ],
-          },
-          {
-            path: "/",
-            component: "../layouts/DefaultContainer",
-            routes: [
-              {
-                path: "/workbench",
-                name: "workbench",
-                // wrappers: ["@/layouts/ThemeWrap"],
-                component: "@/pages/WorkBench",
-              },
-            ],
-          },
-        ],
-      },
+        path: "/workbench",
+        name: "workbench",
+        component: "@/pages/WorkBench",
+      }
     ],
-  },
-  {
-    path: "/welcome",
-    name: "welcome",
-    icon: "home",
-    component: "@/pages/Welcome",
   },
   {
     path: "*",

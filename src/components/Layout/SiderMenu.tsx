@@ -2,7 +2,7 @@ import SpaceSelect from "@/layouts/SpaceContainer/Sider/SpaceSelect";
 import { Divider } from "antd";
 import classNames from "classnames";
 import { ReactNode, useState } from "react";
-import styles from "@/layouts/SpaceContainer/Sider/index.less";
+import styles from "./SiderMenu.less";
 
 interface IProps {
   props: any;
@@ -19,15 +19,9 @@ export default ({ props, defaultDom }: IProps) => {
 
   return (
     <>
-      <div
-        className={classNames(styles.sider, {
-          [styles.siderCollapsed]: collapsed,
-        })}
-      >
-        {defaultDom}
-        <SpaceSelect collapsed={props.collapsed} />
-        <Divider style={{ margin: "0 0 14px" }} />
-      </div>
+      {defaultDom}
+      <Divider style={{ margin: "0 0 14px" }} />
+      <div>其余部分</div>
     </>
   );
 };

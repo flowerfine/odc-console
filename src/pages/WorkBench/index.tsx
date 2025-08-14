@@ -16,12 +16,11 @@
 
 import React, { useEffect, useState } from "react";
 import WorkBenchLayout from "./Layout";
-import ActivityBar from "./ActivityBar";
 import SideBar from "./SideBar";
-import WindowManager from "@/pages/Workspace/window";
+import WindowManager from "./Window/window";
 import pageStore from "@/store/window";
 import { openNewSQLPage } from "@/store/helper/page/openPage";
-import { useParams, useSnapshot } from "@umijs/max";
+import { useSnapshot } from "@umijs/max";
 import WorkspaceStore from "./context/WorkspaceStore";
 
 interface WorkBenchProps {}
@@ -42,7 +41,6 @@ const WorkBench: React.FC<WorkBenchProps> = (props: WorkBenchProps) => {
   }, []);
 
   const handleActivatePage = (activeKey: string) => {
-    console.log("handleActivatePage", activeKey);
     pageStore.setActivePageKeyAndPushUrl(activeKey);
   };
 
@@ -57,7 +55,6 @@ const WorkBench: React.FC<WorkBenchProps> = (props: WorkBenchProps) => {
   return (
     <>
       <WorkBenchLayout
-        activityBar={<ActivityBar />}
         sideBar={<SideBar />}
         editorGroup={
           <WindowManager

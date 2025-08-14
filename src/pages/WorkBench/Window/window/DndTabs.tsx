@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useRef, useState } from "react";
+import React from "react";
 import { Tabs } from "antd";
 import { TabsProps } from "antd/lib/tabs";
 import type { DragEndEvent } from "@dnd-kit/core";

@@ -179,6 +179,7 @@ ol {
 }
 
 .ant-page-header {
+  display: none;
   position: fixed;
   top: 0;
   right: 0;
@@ -201,6 +202,31 @@ ol {
 
 .ant-page-header-back-button {
   color: #fff;
+}
+
+.ant-pro-sider-collapsed-button {
+  position: absolute;
+  z-index: 1;
+  top: 300px;
+  right: -6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 12px;
+  height: 36px;
+  color: var(--text-color-hint);
+  background-color: var(--tab-background-color);
+  border: 1px solid var(--odc-border-color);
+  border-radius: 8px;
+  cursor: pointer;
+  
+  &:hover {
+    background-color: var(--background-normal-color);
+  }
+  
+  .anticon {
+    scale: 0.8;
+  }
 }
 
 // antd tree 箭头颜色替换

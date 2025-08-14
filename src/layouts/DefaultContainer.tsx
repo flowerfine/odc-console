@@ -14,30 +14,20 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { Layout } from 'antd';
-import { Outlet } from '@umijs/max';
-// import styles from './DefaultContainer.less';
-import styles from '@/layouts/SpaceContainer/index.less';
-
-const { Content } = Layout;
+import React from "react";
+import { Outlet } from "@umijs/max";
+import styles from "@/layouts/SpaceContainer/index.less";
 
 class DefaultContainer extends React.Component {
   public render() {
     return (
       <div className={styles.content}>
-      <div className={styles.mainBox}>
-        <div className={styles.main}>
-          <Outlet />
+        <div className={styles.mainBox}>
+          <div className={styles.main}>
+            <Outlet />
+          </div>
         </div>
       </div>
-    </div>
-
-      // <Layout style={{ minWidth: '960px', height: '100%' }}>
-      //   <Content className={styles.content}>
-      //     <Outlet />
-      //   </Content>
-      // </Layout>
     );
   }
 }
